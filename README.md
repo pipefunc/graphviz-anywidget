@@ -145,3 +145,4 @@ Built with:
 - [graphvizsvg](https://www.npmjs.com/package/graphvizsvg)
 - [d3-graphviz](https://www.npmjs.com/package/d3-graphviz)
 - The WASM binary comes from [@hpcc-js/wasm](https://github.com/hpcc-systems/hpcc-js-wasm) (via `d3-graphviz`)
+- Inspired by the VS Code extension [Graphviz Interactive Preview](https://github.com/tintinweb/vscode-interactive-graphviz/).
