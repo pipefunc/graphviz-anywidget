@@ -21,7 +21,16 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Framework :: Jupyter",
+    "Framework :: Jupyter :: JupyterLab",
+    "Framework :: IPython",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Widget Sets",
+    "Typing :: Typed",
+
 ]
+keywords = ["jupyter", "widget", "visualization", "graphviz", "graph", "network", "interactive"]
 
 [project.readme]
 content-type = "text/markdown"
