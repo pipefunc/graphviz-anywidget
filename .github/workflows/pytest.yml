@@ -17,6 +17,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 23.x
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+
+      - run: npm run build
+
       - name: Install uv
         uses: astral-sh/setup-uv@v3
 
