@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Interactive Graphviz visualization widget for Jupyter notebooks using anywidget.
-Graphviz is provided via WASM ([hpcc-js-wasm](https://github.com/hpcc-systems/hpcc-js-wasm)) and the rendering is done using [graphvizsvg](https://github.com/pipefunc/graphvizsvg) and [d3-graphviz](https://github.com/magjac/d3-graphviz).
+Graphviz is provided via WASM ([hpcc-js-wasm](https://github.com/hpcc-systems/hpcc-js-wasm)) and the rendering is done using [graphvizsvg](https://github.com/pipefunc/graphvizsvg) and [d3-graphviz](https://github.com/magjac/d3-graphviz), inspired by the VS Code extension [Graphviz Interactive Preview](https://github.com/tintinweb/vscode-interactive-graphviz/).
 
 https://github.com/user-attachments/assets/74cf39c5-2d64-4c98-b3ee-cf7308753da6
 
