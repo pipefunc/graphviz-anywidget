@@ -9,6 +9,8 @@ Graphviz is provided via WASM ([hpcc-js-wasm](https://github.com/hpcc-systems/hp
 
 https://github.com/user-attachments/assets/74cf39c5-2d64-4c98-b3ee-cf7308753da6
 
+https://github.com/user-attachments/assets/8947dfd1-5d4a-43b9-b0c7-22cb52f72dc3
+
 ## Features
 
 * 🎨 Interactive SVG visualization of Graphviz DOT graphs
