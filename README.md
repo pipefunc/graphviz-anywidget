@@ -18,7 +18,7 @@ https://github.com/user-attachments/assets/74cf39c5-2d64-4c98-b3ee-cf7308753da6
 * 🔄 Zoom reset functionality
 * 📱 Responsive design
 * 🎨 Smooth animations and transitions
-* 💻 Works in JupyterLab and Jupyter Notebook
+* 💻 Works in JupyterLab, Jupyter Notebook, and VS Code
 
 ## Installation
 
