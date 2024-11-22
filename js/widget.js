@@ -156,6 +156,8 @@ function highlightSelection(graphvizInstance, currentSelection, $) {
   highlightedEdges = highlightedEdges.add(legendEdges);
 
   graphvizInstance.highlight(highlightedNodes, highlightedEdges);
+  graphvizInstance.bringToFront(highlightedNodes);
+  graphvizInstance.bringToFront(highlightedEdges);
 }
 
 function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelectedDirection) {
