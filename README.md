@@ -64,12 +64,12 @@ widget
 ```python
 def graph_widget(dot_string: str = "digraph { a -> b; }") -> widgets.VBox:
     """Create an interactive Graphviz widget.
-    
+
     Parameters
     ----------
     dot_string
         The DOT string representing the graph
-    
+
     Returns
     -------
     widgets.VBox
