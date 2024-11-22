@@ -38,7 +38,7 @@ file = "README.md"
 
 [project.urls]
 homepage = "https://github.com/pipefunc/graphviz-anywidget"
-documentation = "htthttps://github.com/pipefunc/graphviz-anywidget"
+documentation = "https://github.com/pipefunc/graphviz-anywidget"
 repository = "https://github.com/pipefunc/graphviz-anywidget"
 
 [project.optional-dependencies]
