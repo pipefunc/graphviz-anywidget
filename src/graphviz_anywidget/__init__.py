@@ -7,7 +7,7 @@ import ipywidgets
 import traitlets
 
 try:
-    __version__ = importlib.metadata.version("pipefunc")
+    __version__ = importlib.metadata.version("graphviz-anywidget")
 except importlib.metadata.PackageNotFoundError:
     __version__ = "unknown"
 

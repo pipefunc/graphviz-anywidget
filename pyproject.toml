@@ -1,16 +1,37 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "graphviz-anywidget"
-version = "0.0.0"
+description = "Interactive Graphviz visualization widget for Jupyter notebooks using anywidget."
+requires-python = ">=3.10"
+dynamic = ["version"]
+maintainers = [{ name = "Bas Nijholt", email = "bas@nijho.lt" }]
+license = { text = "MIT" }
 dependencies = ["anywidget"]
-readme = "README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
 
-# For projects not using `uv`, you can install these development dependencies with:
-# `pip install -e ".[dev]"`
-# If you're using `uv` for development, feel free to remove this section.
+[project.readme]
+content-type = "text/markdown"
+file = "README.md"
+
+[project.urls]
+homepage = "https://github.com/pipefunc/graphviz-anywidget"
+documentation = "htthttps://github.com/pipefunc/graphviz-anywidget"
+repository = "https://github.com/pipefunc/graphviz-anywidget"
+
 [project.optional-dependencies]
 dev = ["watchfiles", "jupyterlab", "pytest"]
 
