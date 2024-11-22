@@ -7,6 +7,8 @@
 Interactive Graphviz visualization widget for Jupyter notebooks using anywidget.
 Graphviz is provided via WASM ([hpcc-js-wasm](https://github.com/hpcc-systems/hpcc-js-wasm)) and the rendering is done using [graphvizsvg](https://github.com/pipefunc/graphvizsvg) and [d3-graphviz](https://github.com/magjac/d3-graphviz).
 
+https://github.com/user-attachments/assets/74cf39c5-2d64-4c98-b3ee-cf7308753da6
+
 ## Features
 
 * 🎨 Interactive SVG visualization of Graphviz DOT graphs
