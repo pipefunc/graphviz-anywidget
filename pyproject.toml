@@ -12,7 +12,7 @@ readme = "README.md"
 # `pip install -e ".[dev]"`
 # If you're using `uv` for development, feel free to remove this section.
 [project.optional-dependencies]
-dev = ["watchfiles", "jupyterlab"]
+dev = ["watchfiles", "jupyterlab", "pytest"]
 
 # Dependency groups (recognized by `uv`). For more details, visit:
 # https://peps.python.org/pep-0735/

@@ -34,7 +34,7 @@ jobs:
       - name: Install graphviz-anywidget
         run: |
           # Install minimal dependencies for testing
-          uv pip install -e ".[test]"
+          uv pip install -e ".[dev]"
 
       - name: Run pytest
         run: |
