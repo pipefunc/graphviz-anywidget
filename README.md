@@ -38,14 +38,14 @@ uv add graphviz-anywidget
 from graphviz_anywidget import graphviz_widget
 
 # Create a widget with a DOT string
-dot_string = """
+dot_source = """
 digraph {
     a -> b;
     b -> c;
     c -> a;
 }
 """
-widget = graphviz_widget(dot_string)
+widget = graphviz_widget(dot_source)
 widget
 ```
 
@@ -68,12 +68,12 @@ widget
 ### graphviz_widget
 
 ```python
-def graphviz_widget(dot_string: str = "digraph { a -> b; }") -> widgets.VBox:
+def graphviz_widget(dot_source: str = "digraph { a -> b; }") -> widgets.VBox:
     """Create an interactive Graphviz widget.
 
     Parameters
     ----------
-    dot_string
+    dot_source
         The DOT string representing the graph
 
     Returns

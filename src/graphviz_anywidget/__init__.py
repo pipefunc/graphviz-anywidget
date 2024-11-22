@@ -17,8 +17,8 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
 
     Example:
     -------
-    >>> dot_string = "digraph { a -> b; b -> c; c -> a; }"
-    >>> widget = GraphvizWidget(dot_source=dot_string)
+    >>> dot_source = "digraph { a -> b; b -> c; c -> a; }"
+    >>> widget = GraphvizWidget(dot_source=dot_source)
     >>> widget
 
     """
@@ -38,9 +38,9 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
 
 
 def graphviz_widget(
-    dot_string: str = "digraph { a -> b; b -> c; c -> a; }",
+    dot_source: str = "digraph { a -> b; b -> c; c -> a; }",
 ) -> ipywidgets.VBox:
-    widget = GraphvizAnyWidget(dot_source=dot_string)
+    widget = GraphvizAnyWidget(dot_source=dot_source)
     reset_button = ipywidgets.Button(description="Reset Zoom")
     direction_selector = ipywidgets.Dropdown(
         options=["bidirectional", "downstream", "upstream", "single"],
