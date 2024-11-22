@@ -114,3 +114,5 @@ venv.bak/
 # JavaScript
 # Ignore node_modules in any directory
 **/node_modules/
+
+src/graphviz_anywidget/static/

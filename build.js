@@ -24,7 +24,7 @@ const buildOptions = {
   entryPoints: ["js/widget.js"],
   bundle: true,
   format: "esm",
-  outdir: "static",
+  outdir: "src/graphviz_anywidget/static",
   plugins: [wasmPlugin],
   sourcemap: watch ? "inline" : false,
   loader: {
