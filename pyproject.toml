@@ -40,6 +40,9 @@ dev = ["watchfiles", "jupyterlab", "pytest"]
 [dependency-groups]
 dev = ["watchfiles", "jupyterlab"]
 
+[tool.hatch.version]
+source = "vcs"
+
 [tool.hatch.build]
 only-packages = true
 artifacts = ["src/graphviz_anywidget/static/*"]
