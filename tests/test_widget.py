@@ -1,7 +1,7 @@
-from graphviz_anywidget import GraphvizWidget
+from graphviz_anywidget import GraphvizAnyWidget
 
 
-def test_widget() -> None:
+def test_graphviz_anywidget() -> None:
     dot_string = "digraph { a -> b; b -> c; c -> a; }"
-    pipe_func_graph_widget = GraphvizWidget(dot_source=dot_string)
-    assert pipe_func_graph_widget.dot_source == dot_string
+    widget = GraphvizAnyWidget(dot_source=dot_string)
+    assert widget.dot_source == dot_string

@@ -12,7 +12,7 @@ except importlib.metadata.PackageNotFoundError:
     __version__ = "unknown"
 
 
-class GraphvizWidget(anywidget.AnyWidget):
+class GraphvizAnyWidget(anywidget.AnyWidget):
     """A widget for rendering a Graphviz graph using d3-graphviz and graphvizsvg.
 
     Example:
@@ -37,10 +37,10 @@ class GraphvizWidget(anywidget.AnyWidget):
     case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
 
 
-def graph_widget(
+def graphviz_widget(
     dot_string: str = "digraph { a -> b; b -> c; c -> a; }",
 ) -> ipywidgets.VBox:
-    widget = GraphvizWidget(dot_source=dot_string)
+    widget = GraphvizAnyWidget(dot_source=dot_string)
     reset_button = ipywidgets.Button(description="Reset Zoom")
     direction_selector = ipywidgets.Dropdown(
         options=["bidirectional", "downstream", "upstream", "single"],

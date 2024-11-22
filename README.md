@@ -29,7 +29,7 @@ uv add graphviz-anywidget
 ## Usage
 
 ```python
-from graphviz_anywidget import graph_widget
+from graphviz_anywidget import graphviz_widget
 
 # Create a widget with a DOT string
 dot_string = """
@@ -39,7 +39,7 @@ digraph {
     c -> a;
 }
 """
-widget = graph_widget(dot_string)
+widget = graphviz_widget(dot_string)
 widget
 ```
 
@@ -59,10 +59,10 @@ widget
 
 ## API
 
-### graph_widget
+### graphviz_widget
 
 ```python
-def graph_widget(dot_string: str = "digraph { a -> b; }") -> widgets.VBox:
+def graphviz_widget(dot_string: str = "digraph { a -> b; }") -> widgets.VBox:
     """Create an interactive Graphviz widget.
 
     Parameters
