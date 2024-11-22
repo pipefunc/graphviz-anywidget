@@ -16,8 +16,8 @@ class GraphvizWidget(anywidget.AnyWidget):
     Example:
     -------
     >>> dot_string = "digraph { a -> b; b -> c; c -> a; }"
-    >>> pipe_func_graph_widget = PipeFuncGraphWidget(dot_source=dot_string)
-    >>> pipe_func_graph_widget
+    >>> widget = GraphvizWidget(dot_source=dot_string)
+    >>> widget
 
     """
 
