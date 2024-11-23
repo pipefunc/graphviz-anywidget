@@ -211,7 +211,9 @@ async function render({ model, el }) {
   });
 
   const currentSelection = [];
+
   let selectedDirection = model.get("selected_direction") || "bidirectional";
+
   const searchObject = {
     type: model.get("search_type") || "included",
     case: model.get("case_sensitive") ? "sensitive" : "insensitive",
