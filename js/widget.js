@@ -251,7 +251,6 @@ async function render({ model, el }) {
       });
   };
 
-
   const resetGraph = () => {
     d3graphvizInstance.resetZoom();
     graphvizInstance.highlight();
