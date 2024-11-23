@@ -4,7 +4,7 @@
         "dev": "node build.js --watch"
     },
     "dependencies": {
-        "d3": "7.6.1",
+        "d3": "7.9.0",
         "d3-graphviz": "4.4.0",
         "graphvizsvg": "1.0.0"
     },
