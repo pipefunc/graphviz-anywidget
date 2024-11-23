@@ -1,29 +1,8 @@
 // widget.js
-/*
- * WASM Loading Strategy
- * --------------------
- * The widget needs to use the Graphviz WASM binary, which is typically loaded
- * as a separate file. To work in Jupyter notebooks without a separate server,
- * we:
- *
- * 1. Import the WASM binary directly and let our esbuild plugin embed it
- * 2. Override the global fetch function to intercept WASM file requests
- * 3. Return our embedded binary instead of trying to fetch the file
- * 4. Disable web worker mode to avoid complications with WASM loading
- *
- * This ensures that:
- * - The WASM binary is available immediately
- * - No external files need to be loaded
- * - The widget works in any Jupyter environment
- * - We avoid duplicate WASM loading
- */
 
 import * as d3 from "d3";
 import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
-
-// Import the WASM binary that's now embedded in our bundle
-import wasmBinary from "../node_modules/@hpcc-js/wasm/dist/graphvizlib.wasm";
 
 function getLegendElements(graphvizInstance, $) {
   const legendNodes = [];
@@ -214,15 +193,6 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
 async function initialize({ model }) {}
 
 async function render({ model, el }) {
-  // Override fetch to return our embedded WASM binary
-  const originalFetch = window.fetch;
-  window.fetch = function (url, options) {
-    if (url.toString().includes("graphvizlib.wasm")) {
-      console.log("Intercepted WASM fetch");
-      return Promise.resolve(new Response(wasmBinary));
-    }
-    return originalFetch(url, options);
-  };
 
   el.innerHTML = '<div id="graph" style="text-align: center;"></div>';
 
