@@ -232,7 +232,6 @@ async function render({ model, el }) {
     },
   });
 
-  // Rest of the render function remains the same, but use widgetId where needed
   const renderGraph = (dotSource) => {
     const transition = d3.transition("graphTransition").ease(d3.easeLinear).delay(0).duration(500);
     d3graphvizInstance
@@ -246,8 +245,9 @@ async function render({ model, el }) {
       .renderDot(dotSource)
       .fit(true)
       .on("end", function () {
-        // Use the unique ID here as well
-        $(`#${widgetId}`).data("graphviz.svg").setup();
+        // This is the key line that reconnects d3 and GraphvizSvg
+        // Calls the jquery.graphviz.svg setup directly
+        $(`#${widgetId}`).data("graphviz.svg").setup(); // Re-setup after rendering
       });
   };
 
