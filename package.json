@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "build": "node build.js",
-        "dev": "node build.js --watch"
+        "build": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static --loader:.wasm=binary",
+        "dev": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static --loader:.wasm=binary --sourcemap=inline --watch"
     },
     "dependencies": {
         "d3": "7.9.0",

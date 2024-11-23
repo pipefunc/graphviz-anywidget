@@ -129,13 +129,6 @@ Open `example.ipynb` in JupyterLab, VS Code, or your favorite editor
 to start developing. Changes made in `js/` will be reflected
 in the notebook.
 
-## Implementation Notes
-
-- The WASM binary is embedded in the JavaScript bundle as base64
-- We override the fetch API to intercept WASM file requests
-- Web Worker mode is disabled to ensure consistent WASM loading
-- This approach works in any Jupyter environment without needing a separate file server
-
 ## License
 
 MIT
