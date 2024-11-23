@@ -11,6 +11,12 @@ try:
 except importlib.metadata.PackageNotFoundError:
     __version__ = "unknown"
 
+_CSS = """
+div[id^="graph-"] {
+    margin: auto;
+}
+"""
+
 
 class GraphvizAnyWidget(anywidget.AnyWidget):
     """A widget for rendering a Graphviz graph using d3-graphviz and graphvizsvg.
@@ -24,12 +30,7 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     """
 
     _esm = Path(__file__).parent / "static" / "widget.js"
-
-    _css = """
-    #graph {
-        margin: auto;
-    }
-    """
+    _css = _CSS
 
     dot_source = traitlets.Unicode("").tag(sync=True)
     selected_direction = traitlets.Unicode("bidirectional").tag(sync=True)

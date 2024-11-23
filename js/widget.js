@@ -193,15 +193,17 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
 async function initialize({ model }) {}
 
 async function render({ model, el }) {
-
-  el.innerHTML = '<div id="graph" style="text-align: center;"></div>';
+  // Create a unique ID for this widget instance
+  const widgetId = `graph-${Math.random().toString(36).substr(2, 9)}`;
+  el.innerHTML = `<div id="${widgetId}" style="text-align: center;"></div>`;
 
   // Ensure the DOM is fully rendered before initializing Graphviz
   await new Promise((resolve) => {
     $(resolve);
   });
 
-  const d3graphvizInstance = d3graphviz("#graph", { useWorker: false }); // Important: disable worker to use our embedded binary;
+  // Use the unique ID in the selector
+  const d3graphvizInstance = d3graphviz(`#${widgetId}`, { useWorker: false });
 
   // Wait for initialization
   await new Promise((resolve) => {
@@ -222,8 +224,8 @@ async function render({ model, el }) {
 
   let graphvizInstance;
 
-  // Initialize GraphvizSvg first
-  $("#graph").graphviz({
+  // Initialize GraphvizSvg with the unique ID
+  $(`#${widgetId}`).graphviz({
     shrink: null,
     zoom: false,
     ready: function () {
@@ -234,7 +236,6 @@ async function render({ model, el }) {
 
   const renderGraph = (dotSource) => {
     const transition = d3.transition("graphTransition").ease(d3.easeLinear).delay(0).duration(500);
-
     d3graphvizInstance
       .engine("dot")
       .fade(true)
@@ -248,7 +249,7 @@ async function render({ model, el }) {
       .on("end", function () {
         // This is the key line that reconnects d3 and GraphvizSvg
         // Calls the jquery.graphviz.svg setup directly
-        $("#graph").data("graphviz.svg").setup(); // Re-setup after rendering
+        $(`#${widgetId}`).data("graphviz.svg").setup(); // Re-setup after rendering
       });
   };
 
