@@ -1,7 +1,7 @@
 {
     "scripts": {
-        "build": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static --loader:.wasm=binary",
-        "dev": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static --loader:.wasm=binary --sourcemap=inline --watch"
+        "build": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static",
+        "dev": "esbuild js/widget.js --bundle --format=esm --outdir=src/graphviz_anywidget/static --sourcemap=inline --watch"
     },
     "dependencies": {
         "d3": "7.9.0",
