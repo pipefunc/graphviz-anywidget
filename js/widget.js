@@ -200,6 +200,7 @@ async function render({ model, el }) {
   // Ensure the DOM is fully rendered before initializing Graphviz
   await new Promise((resolve) => {
     $(resolve);
+    console.log(`0. initStart ${widgetId}`);
   });
 
   // Use the unique ID in the selector
@@ -207,6 +208,7 @@ async function render({ model, el }) {
 
   // Wait for initialization
   await new Promise((resolve) => {
+    console.log(`1. initEnd ${widgetId}`);
     d3graphvizInstance.on("initEnd", resolve);
   });
 
@@ -224,17 +226,23 @@ async function render({ model, el }) {
 
   let graphvizInstance;
 
-  // Initialize GraphvizSvg with the unique ID
-  $(`#${widgetId}`).graphviz({
-    shrink: null,
-    zoom: false,
-    ready: function () {
-      graphvizInstance = this;
-      handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
-    },
+  // Initialize GraphvizSvg with the unique ID and wait for it to be ready
+  await new Promise((resolve) => {
+    $(`#${widgetId}`).graphviz({
+      shrink: null,
+      zoom: false,
+      ready: function () {
+        console.log(`2.0 ready ${widgetId}`);
+        graphvizInstance = this;
+        handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
+        resolve(); // Signal that we're ready
+        console.log(`2.5 ready end ${widgetId}`);
+      },
+    });
   });
 
   const renderGraph = (dotSource) => {
+    console.log(`3.0 renderGraph ${widgetId}`);
     const transition = d3.transition("graphTransition").ease(d3.easeLinear).delay(0).duration(500);
     d3graphvizInstance
       .engine("dot")
@@ -250,6 +258,7 @@ async function render({ model, el }) {
         // This is the key line that reconnects d3 and GraphvizSvg
         // Calls the jquery.graphviz.svg setup directly
         $(`#${widgetId}`).data("graphviz.svg").setup(); // Re-setup after rendering
+        console.log(`3.5 renderGraph end ${widgetId}`);
       });
   };
 
@@ -297,6 +306,7 @@ async function render({ model, el }) {
   });
 
   renderGraph(model.get("dot_source"));
+  console.log(`4.0 render end ${widgetId}`);
 }
 
 export default { initialize, render };
