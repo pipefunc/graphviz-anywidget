@@ -197,12 +197,26 @@ async function render({ model, el }) {
   const widgetId = `graph-${Math.random().toString(36).substr(2, 9)}`;
   el.innerHTML = `<div id="${widgetId}" style="text-align: center;"></div>`;
 
-  // Ensure the DOM is fully rendered before initializing Graphviz
-  await new Promise((resolve) => {
-    $(resolve);
+  // CRITICAL: We must ensure the div exists before proceeding
+  // This prevents the "__graphviz__" error that occurs when trying to
+  // initialize d3-graphviz on a non-existent element
+  await new Promise((resolve, reject) => {
+    let attempts = 0;
+    const checkElement = () => {
+      const div = document.getElementById(widgetId);
+      if (div) {
+        resolve();
+      } else if (attempts < 10) {
+        attempts++;
+        setTimeout(checkElement, 10); // check again in 10ms
+      } else {
+        reject(new Error(`0. initStart ${widgetId} - div not found after 10 attempts`));
+      }
+    };
+    checkElement();
   });
 
-  // Use the unique ID in the selector
+  // Initialize d3-graphviz and wait for it to be ready
   const d3graphvizInstance = d3graphviz(`#${widgetId}`, { useWorker: false });
 
   // Wait for initialization
@@ -224,33 +238,57 @@ async function render({ model, el }) {
 
   let graphvizInstance;
 
-  // Initialize GraphvizSvg with the unique ID
-  $(`#${widgetId}`).graphviz({
-    shrink: null,
-    zoom: false,
-    ready: function () {
-      graphvizInstance = this;
-      handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
-    },
+  // Initialize the jquery-graphviz plugin and wait for it to be ready
+  // This sets up the interactive features like highlighting
+  await new Promise((resolve) => {
+    $(`#${widgetId}`).graphviz({
+      shrink: null,
+      zoom: false,
+      ready: function () {
+        graphvizInstance = this;
+        handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
+        resolve(); // Signal that we're ready
+      },
+    });
   });
 
+  // CRITICAL: This queue ensures that when multiple widgets are initialized,
+  // their rendering operations happen sequentially rather than simultaneously
+  // This prevents the "too late: already running" error from d3 transitions
+  let renderQueue = Promise.resolve();
+
   const renderGraph = (dotSource) => {
-    const transition = d3.transition("graphTransition").ease(d3.easeLinear).delay(0).duration(500);
-    d3graphvizInstance
-      .engine("dot")
-      .fade(true)
-      .transition(transition)
-      .tweenPaths(true)
-      .tweenShapes(true)
-      .zoomScaleExtent([0, Infinity])
-      .zoom(true)
-      .renderDot(dotSource)
-      .fit(true)
-      .on("end", function () {
-        // This is the key line that reconnects d3 and GraphvizSvg
-        // Calls the jquery.graphviz.svg setup directly
-        $(`#${widgetId}`).data("graphviz.svg").setup(); // Re-setup after rendering
+    // Add this render operation to the queue
+    renderQueue = renderQueue.then(() => {
+      return new Promise((resolve) => {
+
+        // CRITICAL: A minimal transition is required for proper timing
+        // Without any transition, the graphvizsvg plugin doesn't initialize properly
+        // But we keep it very short (1ms) to avoid animation timing issues
+        const transition = d3.transition(`graphTransition-${widgetId}`).duration(1);
+
+        d3graphvizInstance
+          .engine("dot")
+          .fade(false)
+          .transition(transition)
+          .tweenPaths(false)
+          .tweenShapes(false)
+          .zoomScaleExtent([0, Infinity])
+          .zoom(true)
+          .on("end", () => {
+            const svg = $(`#${widgetId}`).data("graphviz.svg");
+            if (svg) {
+              svg.setup();
+            } else {
+              console.log(`❌ No SVG found ${widgetId}`);
+            }
+          })
+          .renderDot(dotSource)
+          .fit(true);
       });
+    });
+
+    return renderQueue; // Return the promise for the entire queue
   };
 
   const resetGraph = () => {
@@ -280,8 +318,8 @@ async function render({ model, el }) {
     searchObject.case = model.get("case_sensitive") ? "sensitive" : "insensitive";
   });
 
-  model.on("change:dot_source", () => {
-    renderGraph(model.get("dot_source"));
+  model.on("change:dot_source", async () => {
+    await renderGraph(model.get("dot_source"));
   });
 
   model.on("change:selected_direction", () => {
@@ -296,7 +334,7 @@ async function render({ model, el }) {
     }
   });
 
-  renderGraph(model.get("dot_source"));
+  await renderGraph(model.get("dot_source"));
 }
 
 export default { initialize, render };
