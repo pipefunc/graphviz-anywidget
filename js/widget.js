@@ -205,10 +205,8 @@ async function render({ model, el }) {
     const checkElement = () => {
       const div = document.getElementById(widgetId);
       if (div) {
-        console.log(`0. initStart ${widgetId} - div found`);
         resolve();
       } else if (attempts < 10) {
-        console.log(`0. initStart ${widgetId} - div not found`);
         attempts++;
         setTimeout(checkElement, 10); // check again in 10ms
       } else {
@@ -223,7 +221,6 @@ async function render({ model, el }) {
 
   // Wait for initialization
   await new Promise((resolve) => {
-    console.log(`1. initEnd ${widgetId}`);
     d3graphvizInstance.on("initEnd", resolve);
   });
 
@@ -248,11 +245,9 @@ async function render({ model, el }) {
       shrink: null,
       zoom: false,
       ready: function () {
-        console.log(`2.0 ready ${widgetId}`);
         graphvizInstance = this;
         handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
         resolve(); // Signal that we're ready
-        console.log(`2.5 ready end ${widgetId}`);
       },
     });
   });
@@ -266,7 +261,6 @@ async function render({ model, el }) {
     // Add this render operation to the queue
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
-        console.log(`3.0 renderGraph ${widgetId}`);
 
         // CRITICAL: A minimal transition is required for proper timing
         // Without any transition, the graphvizsvg plugin doesn't initialize properly
@@ -282,18 +276,12 @@ async function render({ model, el }) {
           .zoomScaleExtent([0, Infinity])
           .zoom(true)
           .on("end", () => {
-            console.log(`3.5 complete end ${widgetId}`);
-            // Wait a tiny bit for the second ready event
-            setTimeout(() => {
-              const svg = $(`#${widgetId}`).data("graphviz.svg");
-              if (svg) {
-                svg.setup();
-                console.log(`Setup completed ${widgetId}`);
-              } else {
-                console.log(`❌ No SVG found ${widgetId}`);
-              }
-              resolve();
-            }, 50); // Small delay to ensure ready event has fired
+            const svg = $(`#${widgetId}`).data("graphviz.svg");
+            if (svg) {
+              svg.setup();
+            } else {
+              console.log(`❌ No SVG found ${widgetId}`);
+            }
           })
           .renderDot(dotSource)
           .fit(true);
@@ -347,7 +335,6 @@ async function render({ model, el }) {
   });
 
   await renderGraph(model.get("dot_source"));
-  console.log(`4.0 render end ${widgetId}`);
 }
 
 export default { initialize, render };
