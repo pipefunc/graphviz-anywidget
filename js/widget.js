@@ -190,25 +190,7 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
   });
 }
 
-async function initialize({ model }) {
-  // Initialize default values and state that don't need DOM
-  const searchObject = {
-    type: model.get("search_type") || "included",
-    case: model.get("case_sensitive") ? "sensitive" : "insensitive",
-    nodeName: true,
-    nodeLabel: true,
-    edgeLabel: true,
-  };
-
-  // Set up model change handlers that don't need DOM
-  model.on("change:search_type", () => {
-    searchObject.type = model.get("search_type");
-  });
-
-  model.on("change:case_sensitive", () => {
-    searchObject.case = model.get("case_sensitive") ? "sensitive" : "insensitive";
-  });
-}
+async function initialize({ model }) {}
 
 async function render({ model, el }) {
   // Create a unique ID for this widget instance
@@ -248,6 +230,14 @@ async function render({ model, el }) {
   const currentSelection = [];
 
   let selectedDirection = model.get("selected_direction") || "bidirectional";
+
+  const searchObject = {
+    type: model.get("search_type") || "included",
+    case: model.get("case_sensitive") ? "sensitive" : "insensitive",
+    nodeName: true,
+    nodeLabel: true,
+    edgeLabel: true,
+  };
 
   let graphvizInstance;
 
@@ -331,6 +321,14 @@ async function render({ model, el }) {
     const edgesToHighlight = searchResults.edges.add(legendEdges);
     graphvizInstance.highlight(nodesToHighlight, edgesToHighlight);
   };
+
+  model.on("change:search_type", () => {
+    searchObject.type = model.get("search_type");
+  });
+
+  model.on("change:case_sensitive", () => {
+    searchObject.case = model.get("case_sensitive") ? "sensitive" : "insensitive";
+  });
 
   model.on("change:dot_source", async () => {
     await renderGraph(model.get("dot_source"));
