@@ -4,6 +4,28 @@ import * as d3 from "d3";
 import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
 
+const Logger = {
+  DEBUG: true, // Can be controlled via environment or initialization
+
+  debug(...args) {
+    if (this.DEBUG) {
+      console.debug("🔍 [DEBUG]", ...args);
+    }
+  },
+
+  info(...args) {
+    console.info("ℹ️ [INFO]", ...args);
+  },
+
+  warn(...args) {
+    console.warn("⚠️ [WARN]", ...args);
+  },
+
+  error(...args) {
+    console.error("❌ [ERROR]", ...args);
+  },
+};
+
 function getLegendElements(graphvizInstance, $) {
   const legendNodes = [];
   const legendEdges = [];
@@ -141,7 +163,7 @@ function highlightSelection(graphvizInstance, currentSelection, $) {
 
 function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelectedDirection) {
   // Add hover event listeners for edges
-  console.log("graphvizInstance", graphvizInstance);
+  Logger.debug("Initializing graph events");
   graphvizInstance.edges().each(function () {
     const $edge = $(this);
 
@@ -164,6 +186,7 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
       $(this).find("text").attr("fill", "transparent");
     });
   });
+  Logger.debug("Edge event handlers attached");
 
   // Add event listeners for nodes
   graphvizInstance.nodes().click(function (event) {
@@ -180,6 +203,7 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
 
     highlightSelection(graphvizInstance, currentSelection, $);
   });
+  Logger.debug("Node click handlers attached");
 
   // Add a keydown event listener for escape key to reset highlights
   $(document).keydown(function (event) {
@@ -188,6 +212,7 @@ function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelec
       graphvizInstance.highlight();
     }
   });
+  Logger.debug("Keyboard handlers attached");
 }
 
 async function initialize({ model }) {}
@@ -205,12 +230,15 @@ async function render({ model, el }) {
     const checkElement = () => {
       const div = document.getElementById(widgetId);
       if (div) {
+        Logger.debug(`Widget ${widgetId}: DOM element initialized`);
         resolve();
       } else if (attempts < 10) {
+        Logger.debug(`Widget ${widgetId}: DOM element not found, attempt ${attempts + 1}/10`);
         attempts++;
         setTimeout(checkElement, 10); // check again in 10ms
       } else {
-        reject(new Error(`0. initStart ${widgetId} - div not found after 10 attempts`));
+        Logger.error(`Widget ${widgetId}: Failed to initialize DOM element after 10 attempts`);
+        reject(new Error(`Widget ${widgetId}: DOM element initialization failed`));
       }
     };
     checkElement();
@@ -221,6 +249,7 @@ async function render({ model, el }) {
 
   // Wait for initialization
   await new Promise((resolve) => {
+    Logger.debug(`Widget ${widgetId}: D3 initialization complete`);
     d3graphvizInstance.on("initEnd", resolve);
   });
 
@@ -245,9 +274,11 @@ async function render({ model, el }) {
       shrink: null,
       zoom: false,
       ready: function () {
+        Logger.debug(`Widget ${widgetId}: Graph plugin initialization started`);
         graphvizInstance = this;
         handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
         resolve(); // Signal that we're ready
+        Logger.debug(`Widget ${widgetId}: Graph plugin initialization complete`);
       },
     });
   });
@@ -261,6 +292,7 @@ async function render({ model, el }) {
     // Add this render operation to the queue
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
+        Logger.debug(`Widget ${widgetId}: Starting graph render`);
 
         // CRITICAL: A minimal transition is required for proper timing
         // Without any transition, the graphvizsvg plugin doesn't initialize properly
@@ -276,11 +308,13 @@ async function render({ model, el }) {
           .zoomScaleExtent([0, Infinity])
           .zoom(true)
           .on("end", () => {
+            Logger.debug(`Widget ${widgetId}: Render complete`);
             const svg = $(`#${widgetId}`).data("graphviz.svg");
             if (svg) {
               svg.setup();
+              Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
-              console.log(`❌ No SVG found ${widgetId}`);
+              Logger.error(`Widget ${widgetId}: SVG initialization failed`);
             }
           })
           .renderDot(dotSource)
@@ -292,17 +326,20 @@ async function render({ model, el }) {
   };
 
   const resetGraph = () => {
+    Logger.debug("Graph reset triggered");
     d3graphvizInstance.resetZoom();
     graphvizInstance.highlight();
     currentSelection.length = 0;
   };
 
   const updateDirection = (newDirection) => {
+    Logger.debug(`Direction updated to: ${newDirection}`);
     selectedDirection = newDirection;
     resetGraph();
   };
 
   const searchAndHighlight = (query) => {
+    Logger.debug(`Search triggered with query: ${query}`);
     const searchResults = search(query, searchObject, graphvizInstance, $);
     const { legendNodes, legendEdges } = getLegendElements(graphvizInstance, $);
     const nodesToHighlight = searchResults.nodes.add(legendNodes);
