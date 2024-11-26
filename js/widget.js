@@ -293,16 +293,9 @@ async function render({ model, el }) {
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
         Logger.debug(`Widget ${widgetId}: Starting graph render`);
-
-        // CRITICAL: A minimal transition is required for proper timing
-        // Without any transition, the graphvizsvg plugin doesn't initialize properly
-        // But we keep it very short (1ms) to avoid animation timing issues
-        const transition = d3.transition(`graphTransition-${widgetId}`).duration(1);
-
         d3graphvizInstance
           .engine("dot")
           .fade(false)
-          .transition(transition)
           .tweenPaths(false)
           .tweenShapes(false)
           .zoomScaleExtent([0, Infinity])
@@ -314,6 +307,7 @@ async function render({ model, el }) {
               svg.setup();
               Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
+              // This sometimes happens and I haven't been able to figure out why
               Logger.error(`Widget ${widgetId}: SVG initialization failed`);
             }
           })
