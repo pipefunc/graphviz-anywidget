@@ -5,7 +5,7 @@ import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
 
 const Logger = {
-  DEBUG: true, // Can be controlled via environment or initialization
+  DEBUG: false, // Can be controlled via environment or initialization
 
   debug(...args) {
     if (this.DEBUG) {
