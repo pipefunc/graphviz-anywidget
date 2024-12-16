@@ -84,18 +84,25 @@ async function render({ model, el }) {
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
         Logger.debug(`Widget ${widgetId}: Starting graph render`);
+        const zoomEnabled = model.get('enable_zoom');
         d3graphvizInstance
           .engine("dot")
           .fade(false)
           .tweenPaths(false)
           .tweenShapes(false)
           .zoomScaleExtent([0, Infinity])
-          .zoom(true)
+          .zoomScaleExtent(zoomEnabled ? [0, Infinity] : [1, 1])
+          .zoom(zoomEnabled)
           .on("end", () => {
             Logger.debug(`Widget ${widgetId}: Render complete`);
             const svg = $(`#${widgetId}`).data("graphviz.svg");
             if (svg) {
               svg.setup();
+              // If zoom is disabled, remove zoom behavior completely
+              if (!zoomEnabled) {
+                // Remove zoom behavior from the SVG
+                d3.select(`#${widgetId} svg`).on(".zoom", null);
+              }
               Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
               // This sometimes happens and I haven't been able to figure out why
@@ -146,6 +153,10 @@ async function render({ model, el }) {
 
   model.on("change:selected_direction", () => {
     updateDirection(model.get("selected_direction"));
+  });
+
+  model.on("change:enable_zoom", async () => {
+    await renderGraph(model.get("dot_source"));
   });
 
   model.on("msg:custom", (msg) => {

@@ -36,6 +36,7 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     selected_direction = traitlets.Unicode("bidirectional").tag(sync=True)
     search_type = traitlets.Unicode("included").tag(sync=True)
     case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
+    enable_zoom = traitlets.Bool(True).tag(sync=True)
 
 
 def graphviz_widget(
@@ -93,3 +94,24 @@ def graphviz_widget(
             widget,
         ],
     )
+
+
+def graphviz_widget_simple(
+    dot_source: str = "digraph { a -> b; b -> c; c -> a; }",
+    enable_zoom: bool = True,
+) -> GraphvizAnyWidget:
+    """Create a simple Graphviz widget with optional zooming functionality.
+
+    Parameters
+    ----------
+    dot_source : str
+        The DOT string representing the graph
+    enable_zoom : bool
+        Whether to enable zoom functionality
+
+    Returns
+    -------
+    GraphvizAnyWidget
+        A widget displaying the graph with optional zoom functionality
+    """
+    return GraphvizAnyWidget(dot_source=dot_source, enable_zoom=enable_zoom)
