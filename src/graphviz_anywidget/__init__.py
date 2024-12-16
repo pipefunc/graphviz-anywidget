@@ -42,6 +42,45 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
 def graphviz_widget(
     dot_source: str = "digraph { a -> b; b -> c; c -> a; }",
 ) -> ipywidgets.VBox:
+    """Create a full-featured interactive Graphviz visualization widget.
+
+    Parameters
+    ----------
+    dot_source
+        The DOT language string representing the graph.
+        Default is a simple cyclic graph: "digraph { a -> b; b -> c; c -> a; }"
+
+    Returns
+    -------
+    ipywidgets.VBox
+        A widget container with the following components:
+        - Reset zoom button
+        - Direction selector (bidirectional/downstream/upstream/single)
+        - Search functionality with type selection and case sensitivity
+        - Interactive graph visualization
+
+    Notes
+    -----
+    The widget provides the following interactive features:
+    - Zoom and pan functionality
+    - Node/edge search with regex support
+    - Directional graph traversal
+    - Interactive highlighting
+    - Case-sensitive search option
+
+    Examples
+    --------
+    >>> from graphviz_anywidget import graphviz_widget
+    >>> dot = '''
+    ... digraph {
+    ...     a -> b;
+    ...     b -> c;
+    ...     c -> a;
+    ... }
+    ... '''
+    >>> widget = graphviz_widget(dot)
+    >>> widget  # Display in notebook
+    """
     widget = GraphvizAnyWidget(dot_source=dot_source)
     reset_button = ipywidgets.Button(description="Reset Zoom")
     direction_selector = ipywidgets.Dropdown(
@@ -104,9 +143,9 @@ def graphviz_widget_simple(
 
     Parameters
     ----------
-    dot_source : str
+    dot_source
         The DOT string representing the graph
-    enable_zoom : bool
+    enable_zoom
         Whether to enable zoom functionality
 
     Returns
