@@ -3,29 +3,30 @@
 import * as d3 from "d3";
 import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
+import * as React from 'react';
 import { Logger } from "./logger";
 import { search, getLegendElements, handleGraphvizSvgEvents } from "./helpers";
 import Controls from "./react/Controls";
-import { createRoot } from 'react-dom/client';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { createRoot } from "react-dom/client";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 // Create a theme instance
 const theme = createTheme({
   components: {
     MuiButton: {
       defaultProps: {
-        size: 'small',
+        size: "small",
       },
     },
     MuiTextField: {
       defaultProps: {
-        size: 'small',
+        size: "small",
       },
     },
     MuiSelect: {
       defaultProps: {
-        size: 'small',
+        size: "small",
       },
     },
   },
@@ -37,7 +38,7 @@ async function render({ model, el }) {
   // Create a unique ID for this widget instance
   const widgetId = `graph-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Create container for the entire widget with proper styling
+  // Create the HTML structure
   el.innerHTML = `
     <div style="display: flex; flex-direction: column; gap: 16px;">
       <div id="controls-${widgetId}" style="padding: 16px;"></div>
@@ -45,17 +46,33 @@ async function render({ model, el }) {
     </div>
   `;
 
-  // Get the controls container
-  const controlsContainer = document.getElementById(`controls-${widgetId}`);
-
-  // Render the React controls component with Material-UI theming
-  const root = createRoot(controlsContainer);
-  root.render(
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Controls />
-    </ThemeProvider>
-  );
+  // Wait for the controls container to be available in the DOM
+  await new Promise((resolve, reject) => {
+    let attempts = 0;
+    const checkControlsElement = () => {
+      const controlsContainer = document.getElementById(`controls-${widgetId}`);
+      if (controlsContainer) {
+        Logger.debug(`Controls ${widgetId}: DOM element initialized`);
+        // Create root and render React app
+        const root = createRoot(controlsContainer);
+        root.render(
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Controls model={model} />
+          </ThemeProvider>
+        );
+        resolve();
+      } else if (attempts < 10) {
+        Logger.debug(`Controls ${widgetId}: DOM element not found, attempt ${attempts + 1}/10`);
+        attempts++;
+        setTimeout(checkControlsElement, 10);
+      } else {
+        Logger.error(`Controls ${widgetId}: Failed to initialize DOM element after 10 attempts`);
+        reject(new Error(`Controls ${widgetId}: DOM element initialization failed`));
+      }
+    };
+    checkControlsElement();
+  });
 
   // CRITICAL: We must ensure the div exists before proceeding
   // This prevents the "__graphviz__" error that occurs when trying to

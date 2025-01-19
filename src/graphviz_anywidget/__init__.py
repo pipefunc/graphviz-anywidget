@@ -37,6 +37,7 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     search_type = traitlets.Unicode("included").tag(sync=True)
     case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
     enable_zoom = traitlets.Bool(True).tag(sync=True)
+    search_query = traitlets.Unicode("").tag(sync=True)
 
 
 def graphviz_widget(
