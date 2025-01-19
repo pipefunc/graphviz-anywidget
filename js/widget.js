@@ -5,24 +5,57 @@ import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
 import { Logger } from "./logger";
 import { search, getLegendElements, handleGraphvizSvgEvents } from "./helpers";
-import Controls from "./react/Controls"; // Import your React controls
+import Controls from "./react/Controls";
 import { createRoot } from 'react-dom/client';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+// Create a theme instance
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiSelect: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+  },
+});
 
 async function initialize({ model }) {}
 
 async function render({ model, el }) {
   // Create a unique ID for this widget instance
   const widgetId = `graph-${Math.random().toString(36).substr(2, 9)}`;
-  el.innerHTML = `<div id="${widgetId}" style="text-align: center;"></div>`;
 
-  // Create a div for the React controls
-  const controlsContainerId = `controls-${widgetId}`;
-  const controlsContainer = document.createElement("div");
-  controlsContainer.setAttribute("id", controlsContainerId);
-  el.prepend(controlsContainer); // Add the controls container at the top
-  // Render the React controls component
+  // Create container for the entire widget with proper styling
+  el.innerHTML = `
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div id="controls-${widgetId}" style="padding: 16px;"></div>
+      <div id="${widgetId}" style="text-align: center;"></div>
+    </div>
+  `;
+
+  // Get the controls container
+  const controlsContainer = document.getElementById(`controls-${widgetId}`);
+
+  // Render the React controls component with Material-UI theming
   const root = createRoot(controlsContainer);
-  root.render(<Controls />);
+  root.render(
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Controls />
+    </ThemeProvider>
+  );
 
   // CRITICAL: We must ensure the div exists before proceeding
   // This prevents the "__graphviz__" error that occurs when trying to
