@@ -5,6 +5,8 @@ import "graphvizsvg";
 import { graphviz as d3graphviz } from "d3-graphviz";
 import { Logger } from "./logger";
 import { search, getLegendElements, handleGraphvizSvgEvents } from "./helpers";
+import Controls from "./react/Controls"; // Import your React controls
+import { createRoot } from 'react-dom/client';
 
 async function initialize({ model }) {}
 
@@ -12,6 +14,15 @@ async function render({ model, el }) {
   // Create a unique ID for this widget instance
   const widgetId = `graph-${Math.random().toString(36).substr(2, 9)}`;
   el.innerHTML = `<div id="${widgetId}" style="text-align: center;"></div>`;
+
+  // Create a div for the React controls
+  const controlsContainerId = `controls-${widgetId}`;
+  const controlsContainer = document.createElement("div");
+  controlsContainer.setAttribute("id", controlsContainerId);
+  el.prepend(controlsContainer); // Add the controls container at the top
+  // Render the React controls component
+  const root = createRoot(controlsContainer);
+  root.render(<Controls />);
 
   // CRITICAL: We must ensure the div exists before proceeding
   // This prevents the "__graphviz__" error that occurs when trying to
@@ -84,7 +95,7 @@ async function render({ model, el }) {
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
         Logger.debug(`Widget ${widgetId}: Starting graph render`);
-        const zoomEnabled = model.get('enable_zoom');
+        const zoomEnabled = model.get("enable_zoom");
         d3graphvizInstance
           .engine("dot")
           .fade(false)
