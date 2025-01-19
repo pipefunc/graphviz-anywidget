@@ -12,11 +12,11 @@ function Controls() {
   return (
     <Box sx={{ width: "100%" }}>
       <Stack spacing={2}>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} alignItems="center">
           <ResetButton />
           <DirectionSelect />
         </Stack>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} alignItems="center">
           <SearchInput />
           <SearchTypeSelect />
           <CaseToggle />
