@@ -37,6 +37,7 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     search_type = traitlets.Unicode("included").tag(sync=True)
     case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
     enable_zoom = traitlets.Bool(True).tag(sync=True)
+    freeze_scroll = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
 
 
 def graphviz_widget(
@@ -83,9 +84,17 @@ def graphviz_widget(
     """
     widget = GraphvizAnyWidget(dot_source=dot_source)
     reset_button = ipywidgets.Button(
-        description="Reset Zoom",
+        description="Reset",
         layout=ipywidgets.Layout(width="auto"),
+        icon="refresh",
         button_style="warning",
+    )
+    freeze_toggle = ipywidgets.ToggleButton(
+        value=False,
+        description="Freeze Scroll",
+        icon="snowflake-o",
+        layout=ipywidgets.Layout(width="auto"),
+        button_style="primary",
     )
     direction_selector = ipywidgets.Dropdown(
         options=["bidirectional", "downstream", "upstream", "single"],
@@ -107,7 +116,7 @@ def graphviz_widget(
     case_toggle = ipywidgets.ToggleButton(
         value=False,
         description="Case Sensitive",
-        icon="check",
+        icon="font",
         layout=ipywidgets.Layout(width="auto"),
     )
 
@@ -127,11 +136,21 @@ def graphviz_widget(
     def toggle_case_sensitive(change: dict) -> None:
         widget.case_sensitive = change["new"]
 
+    def toggle_freeze_scroll(change: dict) -> None:
+        widget.freeze_scroll = change["new"]
+        if widget.freeze_scroll:
+            freeze_toggle.description = "Unfreeze Scroll"
+            freeze_toggle.button_style = "danger"
+        else:
+            freeze_toggle.description = "Freeze Scroll"
+            freeze_toggle.button_style = "primary"
+
     reset_button.on_click(reset_graph)
     direction_selector.observe(update_direction, names="value")
     search_input.observe(perform_search, names="value")
     search_type_selector.observe(update_search_type, names="value")
     case_toggle.observe(toggle_case_sensitive, names="value")
+    freeze_toggle.observe(toggle_freeze_scroll, names="value")
 
     # Display ipywidgets
     return ipywidgets.VBox(
@@ -139,6 +158,7 @@ def graphviz_widget(
             ipywidgets.HBox(
                 [
                     reset_button,
+                    freeze_toggle,
                     direction_selector,
                     search_input,
                     search_type_selector,

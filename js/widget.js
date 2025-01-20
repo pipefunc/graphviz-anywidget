@@ -84,7 +84,7 @@ async function render({ model, el }) {
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
         Logger.debug(`Widget ${widgetId}: Starting graph render`);
-        const zoomEnabled = model.get('enable_zoom');
+        const zoomEnabled = model.get("enable_zoom");
         d3graphvizInstance
           .engine("dot")
           .fade(false)
@@ -157,6 +157,27 @@ async function render({ model, el }) {
 
   model.on("change:enable_zoom", async () => {
     await renderGraph(model.get("dot_source"));
+  });
+
+  model.on("change:freeze_scroll", async () => {
+    const freezeScroll = model.get("freeze_scroll");
+    const svg = d3.select(`#${widgetId} svg`);
+    const zoomEnabled = model.get("enable_zoom");
+
+    if (freezeScroll) {
+      // Disable only scroll and zoom
+      svg.on("wheel.zoom", null); // Disable scroll wheel zoom
+      svg.on("mousedown.zoom", null); // Disable zoom on mousedown
+      svg.on("touchstart.zoom", null); // Disable zoom on touchstart
+      svg.on("touchmove.zoom", null); // Disable zoom on touchmove
+      svg.on("touchend.zoom", null); // Disable zoom on touchend
+      svg.on("touchcancel.zoom", null); // Disable zoom on touchcancel
+    } else {
+      // Re-enable zoom if not frozen and zoom is enabled
+      if (zoomEnabled) {
+        svg.call(d3graphvizInstance.zoomBehavior());
+      }
+    }
   });
 
   model.on("msg:custom", (msg) => {
