@@ -84,8 +84,9 @@ def graphviz_widget(
     """
     widget = GraphvizAnyWidget(dot_source=dot_source)
     reset_button = ipywidgets.Button(
-        description="Reset Zoom",
+        description="Reset",
         layout=ipywidgets.Layout(width="auto"),
+        icon="refresh",
         button_style="warning",
     )
     freeze_toggle = ipywidgets.ToggleButton(
@@ -137,6 +138,12 @@ def graphviz_widget(
 
     def toggle_freeze_scroll(change: dict) -> None:
         widget.freeze_scroll = change["new"]
+        if widget.freeze_scroll:
+            freeze_toggle.description = "Unfreeze Scroll"
+            freeze_toggle.button_style = "danger"
+        else:
+            freeze_toggle.description = "Freeze Scroll"
+            freeze_toggle.button_style = "primary"
 
     reset_button.on_click(reset_graph)
     direction_selector.observe(update_direction, names="value")
