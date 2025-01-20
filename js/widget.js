@@ -162,16 +162,21 @@ async function render({ model, el }) {
   model.on("change:freeze_scroll", async () => {
     const freezeScroll = model.get("freeze_scroll");
     const svg = d3.select(`#${widgetId} svg`);
+    const zoomEnabled = model.get("enable_zoom");
 
     if (freezeScroll) {
+      // Disable only scroll and zoom
       svg.on("wheel.zoom", null); // Disable scroll wheel zoom
-      svg.style("pointer-events", "none"); // Disable all pointer events
+      svg.on("mousedown.zoom", null); // Disable zoom on mousedown
+      svg.on("touchstart.zoom", null); // Disable zoom on touchstart
+      svg.on("touchmove.zoom", null); // Disable zoom on touchmove
+      svg.on("touchend.zoom", null); // Disable zoom on touchend
+      svg.on("touchcancel.zoom", null); // Disable zoom on touchcancel
     } else {
       // Re-enable zoom if not frozen and zoom is enabled
-      if (model.get("enable_zoom")) {
+      if (zoomEnabled) {
         svg.call(d3graphvizInstance.zoomBehavior());
       }
-      svg.style("pointer-events", "auto"); // Re-enable all pointer events
     }
   });
 

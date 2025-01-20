@@ -91,7 +91,7 @@ def graphviz_widget(
     freeze_toggle = ipywidgets.ToggleButton(
         value=False,
         description="Freeze Scroll",
-        icon="check",
+        icon="snowflake-o",
         layout=ipywidgets.Layout(width="auto"),
         button_style="primary",
     )
@@ -115,7 +115,7 @@ def graphviz_widget(
     case_toggle = ipywidgets.ToggleButton(
         value=False,
         description="Case Sensitive",
-        icon="check",
+        icon="font",
         layout=ipywidgets.Layout(width="auto"),
     )
 
