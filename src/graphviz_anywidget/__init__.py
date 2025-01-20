@@ -167,28 +167,29 @@ def graphviz_widget(
     search_type_selector.observe(update_search_type, names="value")
     case_toggle.observe(toggle_case_sensitive, names="value")
 
-    zoom = [reset_button, freeze_toggle]
-    search = [search_input, search_type_selector, case_toggle]
-    all_controls = [*zoom, direction_selector, *search]
+    zoom_widgets = [reset_button, freeze_toggle]
+    search_widgets = [search_input, search_type_selector, case_toggle]
+
     controls_box = ipywidgets.HBox(
-        all_controls,
+        [*zoom_widgets, direction_selector, *search_widgets],
         layout=ipywidgets.Layout(gap="8px"),
     )
 
+    # Set visibility of controls based on the `controls` parameter
     if isinstance(controls, bool):
         if not controls:
             controls_box.layout.visibility = "hidden"
     else:
         if isinstance(controls, str):
             controls = [controls]
-        for w in all_controls:
+        for w in controls_box.children:
             w.layout.visibility = "hidden"
         for control in controls:
             if control == "search":
-                for w in search:
+                for w in search_widgets:
                     w.layout.visibility = "visible"
             elif control == "zoom":
-                for w in zoom:
+                for w in zoom_widgets:
                     w.layout.visibility = "visible"
             elif control == "direction":
                 direction_selector.layout.visibility = "visible"
