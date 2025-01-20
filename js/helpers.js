@@ -153,12 +153,7 @@ function _highlightSelection(graphvizInstance, currentSelection, $, model) {
   model.save_changes();
 }
 
-export function handleGraphvizSvgEvents(
-  graphvizInstance,
-  $,
-  currentSelection,
-  getSelectedDirection
-) {
+export function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelectedDirection, model) {
   // Add hover event listeners for edges
   Logger.debug("Initializing graph events");
   graphvizInstance.edges().each(function () {
@@ -198,7 +193,7 @@ export function handleGraphvizSvgEvents(
       currentSelection.splice(0, currentSelection.length, selectionObject);
     }
 
-    _highlightSelection(graphvizInstance, currentSelection, $);
+    _highlightSelection(graphvizInstance, currentSelection, $, model);
   });
   Logger.debug("Node click handlers attached");
 
