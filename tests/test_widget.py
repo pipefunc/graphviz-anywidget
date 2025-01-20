@@ -58,25 +58,20 @@ def test_graphviz_widget_full_structure() -> None:
 
     # Test overall structure
     assert isinstance(widget, VBox)
-    assert len(widget.children) == 3
+    assert len(widget.children) == 2
 
     # Test control row 1 (reset and direction)
     control_row1 = widget.children[0]
     assert isinstance(control_row1, HBox)
-    assert len(control_row1.children) == 2
+    assert len(control_row1.children) == 5
     assert isinstance(control_row1.children[0], Button)  # Reset button
     assert isinstance(control_row1.children[1], Dropdown)  # Direction selector
-
-    # Test control row 2 (search controls)
-    control_row2 = widget.children[1]
-    assert isinstance(control_row2, HBox)
-    assert len(control_row2.children) == 3
-    assert isinstance(control_row2.children[0], Text)  # Search input
-    assert isinstance(control_row2.children[1], Dropdown)  # Search type
-    assert isinstance(control_row2.children[2], ToggleButton)  # Case sensitive
+    assert isinstance(control_row1.children[2], Text)  # Search input
+    assert isinstance(control_row1.children[3], Dropdown)  # Search type
+    assert isinstance(control_row1.children[4], ToggleButton)  # Case sensitive
 
     # Test graph widget
-    assert isinstance(widget.children[2], GraphvizAnyWidget)
+    assert isinstance(widget.children[-1], GraphvizAnyWidget)
 
 
 def test_graphviz_widget_direction_options() -> None:
@@ -94,7 +89,7 @@ def test_graphviz_widget_direction_options() -> None:
 def test_graphviz_widget_search_type_options() -> None:
     """Test search type options in full widget."""
     widget = graphviz_widget()
-    search_type_selector = widget.children[1].children[1]
+    search_type_selector = widget.children[0].children[3]
     assert set(search_type_selector.options) == {"exact", "included", "regex"}
 
 
@@ -102,7 +97,7 @@ def test_graphviz_widget_invalid_dot() -> None:
     """Test widget behavior with invalid DOT source."""
     invalid_dot = "invalid dot source"
     widget = graphviz_widget(invalid_dot)
-    assert widget.children[2].dot_source == invalid_dot
+    assert widget.children[-1].dot_source == invalid_dot
 
 
 @pytest.mark.parametrize(
@@ -120,4 +115,4 @@ def test_graphviz_widget_various_inputs(dot_source: str) -> None:
     full_widget = graphviz_widget(dot_source)
 
     assert simple_widget.dot_source == dot_source
-    assert full_widget.children[2].dot_source == dot_source
+    assert full_widget.children[-1].dot_source == dot_source
