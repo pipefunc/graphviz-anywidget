@@ -82,25 +82,32 @@ def graphviz_widget(
     >>> widget  # Display in notebook
     """
     widget = GraphvizAnyWidget(dot_source=dot_source)
-    reset_button = ipywidgets.Button(description="Reset Zoom")
+    reset_button = ipywidgets.Button(
+        description="Reset Zoom",
+        layout=ipywidgets.Layout(width="auto"),
+    )
     direction_selector = ipywidgets.Dropdown(
         options=["bidirectional", "downstream", "upstream", "single"],
         value="bidirectional",
         description="Direction:",
+        layout=ipywidgets.Layout(width="auto"),
     )
     search_input = ipywidgets.Text(
         placeholder="Search...",
         description="Search:",
+        layout=ipywidgets.Layout(width="200px"),
     )
     search_type_selector = ipywidgets.Dropdown(
         options=["exact", "included", "regex"],
         value="exact",
         description="Search Type:",
+        layout=ipywidgets.Layout(width="auto"),
     )
     case_toggle = ipywidgets.ToggleButton(
         value=False,
         description="Case Sensitive",
         icon="check",
+        layout=ipywidgets.Layout(width="auto"),
     )
 
     # Define button actions
@@ -128,8 +135,16 @@ def graphviz_widget(
     # Display ipywidgets
     return ipywidgets.VBox(
         [
-            ipywidgets.HBox([reset_button, direction_selector]),
-            ipywidgets.HBox([search_input, search_type_selector, case_toggle]),
+            ipywidgets.HBox(
+                [
+                    reset_button,
+                    direction_selector,
+                    search_input,
+                    search_type_selector,
+                    case_toggle,
+                ],
+                layout=ipywidgets.Layout(gap="8px"),
+            ),
             widget,
         ],
     )
