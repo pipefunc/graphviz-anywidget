@@ -84,7 +84,7 @@ async function render({ model, el }) {
     renderQueue = renderQueue.then(() => {
       return new Promise((resolve) => {
         Logger.debug(`Widget ${widgetId}: Starting graph render`);
-        const zoomEnabled = model.get('enable_zoom');
+        const zoomEnabled = model.get("enable_zoom");
         d3graphvizInstance
           .engine("dot")
           .fade(false)
@@ -157,6 +157,22 @@ async function render({ model, el }) {
 
   model.on("change:enable_zoom", async () => {
     await renderGraph(model.get("dot_source"));
+  });
+
+  model.on("change:freeze_scroll", async () => {
+    const freezeScroll = model.get("freeze_scroll");
+    const svg = d3.select(`#${widgetId} svg`);
+
+    if (freezeScroll) {
+      svg.on("wheel.zoom", null); // Disable scroll wheel zoom
+      svg.style("pointer-events", "none"); // Disable all pointer events
+    } else {
+      // Re-enable zoom if not frozen and zoom is enabled
+      if (model.get("enable_zoom")) {
+        svg.call(d3graphvizInstance.zoomBehavior());
+      }
+      svg.style("pointer-events", "auto"); // Re-enable all pointer events
+    }
   });
 
   model.on("msg:custom", (msg) => {
