@@ -85,6 +85,7 @@ def graphviz_widget(
     reset_button = ipywidgets.Button(
         description="Reset Zoom",
         layout=ipywidgets.Layout(width="auto"),
+        button_style="warning",
     )
     direction_selector = ipywidgets.Dropdown(
         options=["bidirectional", "downstream", "upstream", "single"],
