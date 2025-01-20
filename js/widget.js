@@ -67,7 +67,13 @@ async function render({ model, el }) {
       ready: function () {
         Logger.debug(`Widget ${widgetId}: Graph plugin initialization started`);
         graphvizInstance = this;
-        handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, () => selectedDirection);
+        handleGraphvizSvgEvents(
+          graphvizInstance,
+          $,
+          currentSelection,
+          () => selectedDirection,
+          model
+        );
         resolve(); // Signal that we're ready
         Logger.debug(`Widget ${widgetId}: Graph plugin initialization complete`);
       },

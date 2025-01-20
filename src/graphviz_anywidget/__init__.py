@@ -38,6 +38,13 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
     enable_zoom = traitlets.Bool(True).tag(sync=True)
     freeze_scroll = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
+    last_clicked_node = traitlets.Unicode(None, allow_none=True).tag(sync=True)
+    highlighted_nodes = traitlets.List(traitlets.Unicode(), default_value=[]).tag(
+        sync=True
+    )
+    highlighted_edges = traitlets.List(traitlets.Unicode(), default_value=[]).tag(
+        sync=True
+    )
 
 
 def graphviz_widget(
