@@ -1,6 +1,6 @@
 import importlib.metadata
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, get_args
 
 import anywidget
 import ipywidgets
@@ -40,8 +40,12 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     freeze_scroll = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
 
 
+Controls = Literal["zoom", "search", "direction"]
+
+
 def graphviz_widget(
     dot_source: str = "digraph { a -> b; b -> c; c -> a; }",
+    controls: bool | Controls | list[Controls] = True,
 ) -> ipywidgets.VBox:
     """Create a full-featured interactive Graphviz visualization widget.
 
@@ -50,6 +54,17 @@ def graphviz_widget(
     dot_source
         The DOT language string representing the graph.
         Default is a simple cyclic graph: "digraph { a -> b; b -> c; c -> a; }"
+    controls
+        Controls to display above the graph. Can be:
+
+        - ``True``: show all controls
+        - ``False``: hide all controls
+        - ``"zoom"``: show only zoom-related controls (reset and freeze scroll)
+        - ``"search"``: show only search-related controls (search box, type selector, case toggle)
+        - ``"direction"``: show only direction selector
+        - list of the above strings to show multiple control groups
+
+        Default is True (show all controls).
 
     Returns
     -------
@@ -124,6 +139,15 @@ def graphviz_widget(
     def reset_graph(_: Any) -> None:
         widget.send({"action": "reset_zoom"})
 
+    def toggle_freeze_scroll(change: dict) -> None:
+        widget.freeze_scroll = change["new"]
+        if widget.freeze_scroll:
+            freeze_toggle.description = "Unfreeze Scroll"
+            freeze_toggle.button_style = "danger"
+        else:
+            freeze_toggle.description = "Freeze Scroll"
+            freeze_toggle.button_style = "primary"
+
     def update_direction(change: dict) -> None:
         widget.selected_direction = change["new"]
 
@@ -136,39 +160,48 @@ def graphviz_widget(
     def toggle_case_sensitive(change: dict) -> None:
         widget.case_sensitive = change["new"]
 
-    def toggle_freeze_scroll(change: dict) -> None:
-        widget.freeze_scroll = change["new"]
-        if widget.freeze_scroll:
-            freeze_toggle.description = "Unfreeze Scroll"
-            freeze_toggle.button_style = "danger"
-        else:
-            freeze_toggle.description = "Freeze Scroll"
-            freeze_toggle.button_style = "primary"
-
     reset_button.on_click(reset_graph)
+    freeze_toggle.observe(toggle_freeze_scroll, names="value")
     direction_selector.observe(update_direction, names="value")
     search_input.observe(perform_search, names="value")
     search_type_selector.observe(update_search_type, names="value")
     case_toggle.observe(toggle_case_sensitive, names="value")
-    freeze_toggle.observe(toggle_freeze_scroll, names="value")
 
-    # Display ipywidgets
-    return ipywidgets.VBox(
-        [
-            ipywidgets.HBox(
-                [
-                    reset_button,
-                    freeze_toggle,
-                    direction_selector,
-                    search_input,
-                    search_type_selector,
-                    case_toggle,
-                ],
-                layout=ipywidgets.Layout(gap="8px"),
-            ),
-            widget,
-        ],
+    zoom_widgets = [reset_button, freeze_toggle]
+    search_widgets = [search_input, search_type_selector, case_toggle]
+
+    controls_box = ipywidgets.HBox(
+        [*zoom_widgets, direction_selector, *search_widgets],
+        layout=ipywidgets.Layout(gap="8px"),
     )
+
+    # Set visibility of controls based on the `controls` parameter
+    if isinstance(controls, bool):
+        if not controls:
+            controls_box.layout.visibility = "hidden"
+    else:
+        if isinstance(controls, str):
+            controls = [controls]
+        for w in controls_box.children:
+            w.layout.visibility = "hidden"
+        for control in controls:
+            if control == "search":
+                for w in search_widgets:
+                    w.layout.visibility = "visible"
+            elif control == "zoom":
+                for w in zoom_widgets:
+                    w.layout.visibility = "visible"
+            elif control == "direction":
+                direction_selector.layout.visibility = "visible"
+            else:
+                options = get_args(Controls)
+                msg = (
+                    f"Unknown control: `{control}`."
+                    f" Valid options are: {', '.join(options)} or lists of them."
+                )
+                raise ValueError(msg)
+
+    return ipywidgets.VBox([controls_box, widget])
 
 
 def graphviz_widget_simple(
