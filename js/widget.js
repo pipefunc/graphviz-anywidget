@@ -16,13 +16,14 @@ async function render({ model, el }) {
   // CRITICAL: We must ensure the div exists before proceeding
   // This prevents the "__graphviz__" error that occurs when trying to
   // initialize d3-graphviz on a non-existent element
-  await new Promise((resolve, reject) => {
+  const widgetElem = await new Promise((resolve, reject) => {
     let attempts = 0;
     const checkElement = () => {
-      const div = document.getElementById(widgetId);
+      // document.queryElementById() and friends don't work with shadowRoot, so we use element reference
+      const div = document.getElementById(widgetId) || el.querySelector(`#${widgetId}`);
       if (div) {
         Logger.debug(`Widget ${widgetId}: DOM element initialized`);
-        resolve();
+        resolve(div);
       } else if (attempts < 10) {
         Logger.debug(`Widget ${widgetId}: DOM element not found, attempt ${attempts + 1}/10`);
         attempts++;
@@ -36,7 +37,7 @@ async function render({ model, el }) {
   });
 
   // Initialize d3-graphviz and wait for it to be ready
-  const d3graphvizInstance = d3graphviz(`#${widgetId}`, { useWorker: false });
+  const d3graphvizInstance = d3graphviz(widgetElem, { useWorker: false });
 
   // Wait for initialization
   await new Promise((resolve) => {
@@ -61,7 +62,7 @@ async function render({ model, el }) {
   // Initialize the jquery-graphviz plugin and wait for it to be ready
   // This sets up the interactive features like highlighting
   await new Promise((resolve) => {
-    $(`#${widgetId}`).graphviz({
+    $(widgetElem).graphviz({
       shrink: null,
       zoom: false,
       ready: function () {
@@ -95,13 +96,13 @@ async function render({ model, el }) {
           .zoom(zoomEnabled)
           .on("end", () => {
             Logger.debug(`Widget ${widgetId}: Render complete`);
-            const svg = $(`#${widgetId}`).data("graphviz.svg");
+            const svg = $(widgetElem).data("graphviz.svg");
             if (svg) {
               svg.setup();
               // If zoom is disabled, remove zoom behavior completely
               if (!zoomEnabled) {
                 // Remove zoom behavior from the SVG
-                d3.select(`#${widgetId} svg`).on(".zoom", null);
+                d3.select(widgetElem.querySelector('svg')).on(".zoom", null);
               }
               Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
@@ -161,7 +162,7 @@ async function render({ model, el }) {
 
   model.on("change:freeze_scroll", async () => {
     const freezeScroll = model.get("freeze_scroll");
-    const svg = d3.select(`#${widgetId} svg`);
+    const svg = d3.select(widgetElem.querySelector('svg'));
     const zoomEnabled = model.get("enable_zoom");
 
     if (freezeScroll) {
