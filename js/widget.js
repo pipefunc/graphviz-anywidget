@@ -75,17 +75,12 @@ async function render({ model, el }) {
     });
   });
 
-  // CRITICAL: This queue ensures that when multiple widgets are initialized,
-  // their rendering operations happen sequentially rather than simultaneously
-  // This prevents the "too late: already running" error from d3 transitions
-  let renderQueue = Promise.resolve();
-
   const renderGraph = (dotSource) => {
-    // Add this render operation to the queue
-    renderQueue = renderQueue.then(() => {
-      return new Promise((resolve) => {
-        Logger.debug(`Widget ${widgetId}: Starting graph render`);
-        const zoomEnabled = model.get("enable_zoom");
+    // Directly return the promise from d3-graphviz render process
+    return new Promise((resolve, reject) => { // Wrap in a promise that resolves on 'end'
+      Logger.debug(`Widget ${widgetId}: Starting graph render`);
+      const zoomEnabled = model.get("enable_zoom");
+      try {
         d3graphvizInstance
           .engine("dot")
           .fade(false)
@@ -95,27 +90,27 @@ async function render({ model, el }) {
           .zoomScaleExtent(zoomEnabled ? [0, Infinity] : [1, 1])
           .zoom(zoomEnabled)
           .on("end", () => {
-            Logger.debug(`Widget ${widgetId}: Render complete`);
+            Logger.debug(`Widget ${widgetId}: Render complete ('end' event)`);
             const svg = $(widgetElem).data("graphviz.svg");
             if (svg) {
               svg.setup();
-              // If zoom is disabled, remove zoom behavior completely
               if (!zoomEnabled) {
-                // Remove zoom behavior from the SVG
                 d3.select(widgetElem.querySelector('svg')).on(".zoom", null);
               }
               Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
-              // This sometimes happens and I haven't been able to figure out why
               Logger.error(`Widget ${widgetId}: SVG initialization failed`);
             }
+            resolve(); // Resolve the promise when render finishes
           })
           .renderDot(dotSource)
           .fit(true);
-      });
+        Logger.debug(`Widget ${widgetId}: renderDot called`); // Add log here
+      } catch (error) {
+         Logger.error(`Widget ${widgetId}: Error during renderDot call:`, error);
+         reject(error); // Reject the promise on error
+      }
     });
-
-    return renderQueue; // Return the promise for the entire queue
   };
 
   const resetGraph = () => {
@@ -141,26 +136,38 @@ async function render({ model, el }) {
   };
 
   model.on("change:search_type", () => {
+    Logger.debug(`Search type updated to: ${model.get("search_type")}`);
     searchObject.type = model.get("search_type");
   });
 
   model.on("change:case_sensitive", () => {
+    Logger.debug(`Case sensitive updated to: ${model.get("case_sensitive")}`);
     searchObject.case = model.get("case_sensitive") ? "sensitive" : "insensitive";
   });
 
   model.on("change:dot_source", async () => {
-    await renderGraph(model.get("dot_source"));
+    const newSource = model.get("dot_source"); // Get source outside log
+    Logger.debug(`Dot source change detected. Length: ${newSource.length}`); // Modified log
+    try {
+      await renderGraph(newSource); // Await the promise that resolves on 'end'
+      Logger.debug("renderGraph awaited successfully.");
+    } catch (error) {
+       Logger.error("Error awaiting renderGraph:", error);
+    }
   });
 
   model.on("change:selected_direction", () => {
+    Logger.debug(`Selected direction updated to: ${model.get("selected_direction")}`);
     updateDirection(model.get("selected_direction"));
   });
 
   model.on("change:enable_zoom", async () => {
+    Logger.debug(`Enable zoom updated to: ${model.get("enable_zoom")}`);
     await renderGraph(model.get("dot_source"));
   });
 
   model.on("change:freeze_scroll", async () => {
+    Logger.debug(`Freeze scroll updated to: ${model.get("freeze_scroll")}`);
     const freezeScroll = model.get("freeze_scroll");
     const svg = d3.select(widgetElem.querySelector('svg'));
     const zoomEnabled = model.get("enable_zoom");
@@ -176,20 +183,30 @@ async function render({ model, el }) {
     } else {
       // Re-enable zoom if not frozen and zoom is enabled
       if (zoomEnabled) {
+        Logger.debug(`Re-enabling zoom`);
         svg.call(d3graphvizInstance.zoomBehavior());
       }
     }
   });
 
   model.on("msg:custom", (msg) => {
+    Logger.debug(`Custom message received: ${msg.action}`);
     if (msg.action === "reset_zoom") {
+      Logger.debug(`Resetting zoom`);
       resetGraph();
     } else if (msg.action === "search") {
+      Logger.debug(`Searching and highlighting`);
       searchAndHighlight(msg.query);
     }
   });
 
-  await renderGraph(model.get("dot_source"));
+  // Initial render
+  try {
+      await renderGraph(model.get("dot_source"));
+      Logger.debug("Initial render completed.");
+  } catch(error) {
+      Logger.error("Error during initial render:", error);
+  }
 }
 
 export default { initialize, render };
