@@ -1,6 +1,6 @@
 import importlib.metadata
 from pathlib import Path
-from typing import Any, Literal, get_args
+from typing import Any, Literal, get_args, Sequence, Callable
 
 import anywidget
 import ipywidgets
@@ -46,6 +46,10 @@ Controls = Literal["zoom", "search", "direction"]
 def graphviz_widget(
     dot_source: str = "digraph { a -> b; b -> c; c -> a; }",
     controls: bool | Controls | list[Controls] = True,
+    extra_controls_factory: Callable[
+        [GraphvizAnyWidget], ipywidgets.Widget | Sequence[ipywidgets.Widget] | None
+    ]
+    | None = None,
 ) -> ipywidgets.VBox:
     """Create a full-featured interactive Graphviz visualization widget.
 
@@ -65,6 +69,11 @@ def graphviz_widget(
         - list of the above strings to show multiple control groups
 
         Default is True (show all controls).
+    extra_controls_factory
+        A function that takes the `GraphvizAnyWidget` instance as input
+        and returns an extra widget or sequence of widgets to display
+        above the standard controls. This allows creating custom controls
+        that interact with the graph widget.
 
     Returns
     -------
@@ -201,7 +210,17 @@ def graphviz_widget(
                 )
                 raise ValueError(msg)
 
-    return ipywidgets.VBox([controls_box, widget])
+    # Call the factory to get extra controls, if provided
+    extra_widget_list: list[ipywidgets.Widget] = []
+    if extra_controls_factory:
+        created_widgets = extra_controls_factory(widget)
+        if created_widgets:
+            if isinstance(created_widgets, ipywidgets.Widget):
+                extra_widget_list = [created_widgets]
+            else:
+                extra_widget_list = list(created_widgets)
+
+    return ipywidgets.VBox([*extra_widget_list, controls_box, widget])
 
 
 def graphviz_widget_simple(
