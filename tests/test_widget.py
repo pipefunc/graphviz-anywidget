@@ -117,3 +117,29 @@ def test_graphviz_widget_various_inputs(dot_source: str) -> None:
 
     assert simple_widget.dot_source == dot_source
     assert full_widget.children[-1].dot_source == dot_source
+
+
+def test_graphviz_widget_extra_controls_factory() -> None:
+    """Test the extra_controls_factory functionality."""
+
+    # Define a simple factory that creates a button
+    def _factory(widget_instance: GraphvizAnyWidget) -> Button:
+        assert isinstance(widget_instance, GraphvizAnyWidget)
+        return Button(description="Extra Button")
+
+    # Call graphviz_widget with the factory
+    widget = graphviz_widget(extra_controls_factory=_factory)
+
+    # Check structure
+    assert isinstance(widget, VBox)
+    # Expecting: [Extra Button, Controls HBox, GraphvizAnyWidget]
+    assert len(widget.children) == 3
+
+    # Check the extra widget
+    extra_widget = widget.children[0]
+    assert isinstance(extra_widget, Button)
+    assert extra_widget.description == "Extra Button"
+
+    # Check standard controls and graph widget are still there
+    assert isinstance(widget.children[1], HBox)
+    assert isinstance(widget.children[2], GraphvizAnyWidget)
