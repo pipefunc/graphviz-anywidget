@@ -94,11 +94,14 @@ async function render({ model, el }) {
             const svg = $(widgetElem).data("graphviz.svg");
             if (svg) {
               svg.setup();
+              // If zoom is disabled, remove zoom behavior completely
               if (!zoomEnabled) {
+                // Remove zoom behavior from the SVG
                 d3.select(widgetElem.querySelector('svg')).on(".zoom", null);
               }
               Logger.info(`Widget ${widgetId}: Setup successful`);
             } else {
+              // This sometimes happens and I haven't been able to figure out why
               Logger.error(`Widget ${widgetId}: SVG initialization failed`);
             }
             resolve(); // Resolve the promise when render finishes
