@@ -181,7 +181,7 @@ def graphviz_widget(
 
     controls_box = ipywidgets.HBox(
         [*zoom_widgets, direction_selector, *search_widgets],
-        layout=ipywidgets.Layout(gap="8px"),
+        layout=ipywidgets.Layout(margin="8px"),
     )
 
     # Set visibility of controls based on the `controls` parameter
