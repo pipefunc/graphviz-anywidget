@@ -176,13 +176,8 @@ async function render({ model, el }) {
     const zoomEnabled = model.get("enable_zoom");
 
     if (freezeScroll) {
-      // Disable only scroll and zoom
+      // Disable only scroll wheel zoom, but keep drag functionality
       svg.on("wheel.zoom", null); // Disable scroll wheel zoom
-      svg.on("mousedown.zoom", null); // Disable zoom on mousedown
-      svg.on("touchstart.zoom", null); // Disable zoom on touchstart
-      svg.on("touchmove.zoom", null); // Disable zoom on touchmove
-      svg.on("touchend.zoom", null); // Disable zoom on touchend
-      svg.on("touchcancel.zoom", null); // Disable zoom on touchcancel
     } else {
       // Re-enable zoom if not frozen and zoom is enabled
       if (zoomEnabled) {
