@@ -117,7 +117,7 @@ function _getConnectedNodes(nodeSet, mode, graphvizInstance) {
   return resultSet;
 }
 
-function _highlightSelection(graphvizInstance, currentSelection, $) {
+function _highlightSelection(graphvizInstance, currentSelection, $, model) {
   let highlightedNodes = $();
   let highlightedEdges = $();
 
@@ -133,9 +133,27 @@ function _highlightSelection(graphvizInstance, currentSelection, $) {
   graphvizInstance.highlight(highlightedNodes, highlightedEdges);
   graphvizInstance.bringToFront(highlightedNodes);
   graphvizInstance.bringToFront(highlightedEdges);
+
+  // Extract node and edge IDs for trait synchronization
+  const highlightedNodeIds = highlightedNodes
+    .map(function () {
+      return $(this).data("name");
+    })
+    .get();
+
+  const highlightedEdgeIds = highlightedEdges
+    .map(function () {
+      return $(this).data("name");
+    })
+    .get();
+
+  // Update the model traits
+  model.set("highlighted_nodes", highlightedNodeIds);
+  model.set("highlighted_edges", highlightedEdgeIds);
+  model.save_changes();
 }
 
-export function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelectedDirection) {
+export function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, getSelectedDirection, model) {
   // Add hover event listeners for edges
   Logger.debug("Initializing graph events");
   graphvizInstance.edges().each(function () {
@@ -175,7 +193,7 @@ export function handleGraphvizSvgEvents(graphvizInstance, $, currentSelection, g
       currentSelection.splice(0, currentSelection.length, selectionObject);
     }
 
-    _highlightSelection(graphvizInstance, currentSelection, $);
+    _highlightSelection(graphvizInstance, currentSelection, $, model);
   });
   Logger.debug("Node click handlers attached");
 
