@@ -9,7 +9,7 @@ repos:
       - id: debug-statements
       - id: check-ast
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.15.17"
+    rev: "v0.16.6"
     hooks:
       - id: ruff
         exclude: docs/source/conf.py|ipynb_filter.py
@@ -17,7 +17,7 @@ repos:
       - id: ruff-format
         exclude: docs/source/conf.py|ipynb_filter.py
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v2.1.0"
+    rev: "v2.3.1"
     hooks:
       - id: mypy
         exclude: ipynb_filter.py|docs/source/conf.py
