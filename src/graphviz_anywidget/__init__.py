@@ -1,6 +1,7 @@
 import importlib.metadata
+from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any, Literal, get_args, Sequence, Callable
+from typing import Any, Literal, get_args
 
 import anywidget
 import ipywidgets
@@ -35,9 +36,9 @@ class GraphvizAnyWidget(anywidget.AnyWidget):
     dot_source = traitlets.Unicode("").tag(sync=True)
     selected_direction = traitlets.Unicode("bidirectional").tag(sync=True)
     search_type = traitlets.Unicode("included").tag(sync=True)
-    case_sensitive = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
+    case_sensitive = traitlets.Bool(False).tag(sync=True)
     enable_zoom = traitlets.Bool(True).tag(sync=True)
-    freeze_scroll = traitlets.Bool(False).tag(sync=True)  # noqa: FBT003
+    freeze_scroll = traitlets.Bool(False).tag(sync=True)
 
 
 Controls = Literal["zoom", "search", "direction"]

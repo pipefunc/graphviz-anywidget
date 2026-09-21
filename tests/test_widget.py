@@ -1,10 +1,11 @@
 import pytest
+from ipywidgets import Button, Dropdown, HBox, Text, ToggleButton, VBox
+
 from graphviz_anywidget import (
     GraphvizAnyWidget,
-    graphviz_widget_simple,
     graphviz_widget,
+    graphviz_widget_simple,
 )
-from ipywidgets import VBox, HBox, Button, Dropdown, Text, ToggleButton
 
 
 def test_graphviz_anywidget() -> None:
